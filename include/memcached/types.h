@@ -152,8 +152,17 @@ extern "C" {
         ITEM_TYPE_SET,
         ITEM_TYPE_MAP,
         ITEM_TYPE_BTREE,
+<<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef GEO
+        ITEM_TYPE_GEO,
+=======
+#ifdef GEOHASH
+=======
+#ifdef GEO
+>>>>>>> 090b6db... Change GEO tags
         ITEM_TYPE_GEO
+>>>>>>> 9ac1a97... Add geohash tags for code
 #endif
         ITEM_TYPE_MAX
     } ENGINE_ITEM_TYPE;

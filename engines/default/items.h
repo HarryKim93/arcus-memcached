@@ -257,6 +257,7 @@ typedef struct _btree_scan_info {
     int32_t          next; /* for free scan link */
 } btree_scan_info;
 
+<<<<<<< HEAD
 #ifdef GEO
 #define GEO_HASHTAB_SIZE 32
 #define GEO_HASHIDX_MASK 0x0000000F
@@ -282,6 +283,88 @@ typedef struct _geo_hash_node {
     int16_t  hcnt[GEO_HASHTAB_SIZE];
     void    *htab[GEO_HASHTAB_SIZE];
 } geo_hash_node;
+#endif
+
+/* common meta info of list and set */
+typedef struct _coll_meta_info {
+    int32_t  mcnt;      /* maximum count */
+    int32_t  ccnt;      /* current count */
+    uint8_t  ovflact;   /* overflow action */
+    uint8_t  mflags;    /* sticky, readable flags */
+    uint16_t itdist;    /* distance from hash item (unit: sizeof(size_t)) */
+    uint32_t stotal;    /* total space */
+} coll_meta_info;
+
+/* item stats */
+typedef struct {
+    unsigned int evicted;
+    unsigned int evicted_nonzero;
+    rel_time_t   evicted_time;
+    unsigned int outofmemory;
+    unsigned int tailrepairs;
+    unsigned int reclaimed;
+} itemstats_t;
+
+=======
+>>>>>>> dd2a3b1... Add geo hash node
+#ifdef GEO
+#define GEO_MAX_DEPTH  7
+#define GEO_ITEM_COUNT 32 /* Recommend GEO_ITEM_COUNT >= 8 */
+
+typedef struct _geo_leaf_node {
+    uint16_t refcount;
+    uint8_t  slabs_clsid;      /* which slab class we're in */
+    uint8_t  ndepth;
+    uint16_t used_count;
+    uint16_t reserved;
+    struct _geo_indx_node *prev;
+    struct _geo_indx_node *next;
+    void    *item[GEO_ITEM_COUNT];
+} geo_leaf_node;
+
+typedef struct _geo_indx_node {
+    uint16_t refcount;
+    uint8_t  slabs_clsid;      /* which slab class we're in */
+    uint8_t  ndepth;
+    uint16_t used_count;
+    uint16_t reserved;
+    struct _geo_indx_node *prev;
+    struct _geo_indx_node *next;
+    void    *item[GEO_ITEM_COUNT];
+    uint32_t ecnt[GEO_ITEM_COUNT];
+} geo_indx_node;
+
+typedef struct _geo_meta_info {
+    int32_t  mcnt;      /* maximum count */
+    int32_t  ccnt;      /* current count */
+    uint8_t  ovflact;   /* overflow action */
+    uint8_t  mflags;    /* sticky, readable, trimmed flags */
+    uint16_t itdist;    /* distance from hash item (unit: sizeof(size_t)) */
+    uint32_t stotal;    /* total space */
+    uint8_t  bktype;    /* bkey type : BKEY_TYPE_UINT64 or BKEY_TYPE_BINARY */
+    uint8_t  dummy[7];  /* reserved space */
+    bkey_t   maxbkeyrange;
+    geo_indx_node *root;
+} geo_meta_info;
+
+/* geo element position */
+typedef struct _geo_elem_posi {
+    geo_indx_node *node;
+    uint16_t         indx;
+    /* It is used temporarily in order to check
+     * if the found bkey is equal to from_bkey or to_bkey of given bkey range
+     * in the do_geo_find_first/next/prev functions.
+     */
+    bool             bkeq;
+} geo_elem_posi;
+
+/* geo scan structure */
+typedef struct _geo_scan_info {
+    hash_item       *it;
+    geo_elem_posi  posi;
+    uint32_t         kidx; /* An index in the given key array as a parameter */
+    int32_t          next; /* for free scan link */
+} geo_scan_info;
 #endif
 
 /* common meta info of list and set */

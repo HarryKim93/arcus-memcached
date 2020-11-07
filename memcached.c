@@ -9155,7 +9155,15 @@ static void process_help_command(conn *c, token_t *tokens, const size_t ntokens)
         "\t" "* <compop> : EQ, NE, LT, LE, GT, GE" "\n"
         );
     } 
+<<<<<<< HEAD
+<<<<<<< HEAD
     #ifdef GEO
+=======
+    #ifdef GEOHASH
+>>>>>>> 9ac1a97... Add geohash tags for code
+=======
+    #ifdef GEO
+>>>>>>> 090b6db... Change GEO tags
     else if (ntokens > 2 && strcmp(type, "geo") == 0) {
         out_string(c,
         "\t" "gop create <key> <attributes> <hashlen> [noreply]\\r\\n" "\n"
@@ -9467,7 +9475,15 @@ static void process_lqdetect_command(conn *c, token_t *tokens, size_t ntokens)
 static inline int get_coll_create_attr_from_tokens(token_t *tokens, const int ntokens,
                                                    int coll_type, item_attr *attrp)
 {
+<<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef GEO
+=======
+#ifdef GEOHASH
+>>>>>>> 9ac1a97... Add geohash tags for code
+=======
+#ifdef GEO
+>>>>>>> 090b6db... Change GEO tags
     assert(coll_type==ITEM_TYPE_LIST || coll_type==ITEM_TYPE_SET ||
            coll_type==ITEM_TYPE_MAP || coll_type==ITEM_TYPE_BTREE) || coll_type==ITEM_TYPE_GEO)
 #else

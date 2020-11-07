@@ -31,6 +31,7 @@ struct iovec {
 #include <sys/uio.h>
 #endif
 
+#define GEO
 #define PROXY_SUPPORT
 #define BOP_COUNT_OPTIMIZE
 //#define NEW_PREFIX_STATS_MANAGEMENT
@@ -151,6 +152,9 @@ extern "C" {
         ITEM_TYPE_SET,
         ITEM_TYPE_MAP,
         ITEM_TYPE_BTREE,
+#ifdef GEO
+        ITEM_TYPE_GEO
+#endif
         ITEM_TYPE_MAX
     } ENGINE_ITEM_TYPE;
 

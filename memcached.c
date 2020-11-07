@@ -9154,7 +9154,25 @@ static void process_help_command(conn *c, token_t *tokens, const size_t ntokens)
         "\t" "* <bitwop> : &, |, ^" "\n"
         "\t" "* <compop> : EQ, NE, LT, LE, GT, GE" "\n"
         );
-    } else if (ntokens > 2 && strcmp(type, "attr") == 0) {
+    } 
+    #ifdef GEO
+    else if (ntokens > 2 && strcmp(type, "geo") == 0) {
+        out_string(c,
+        "\t" "gop create <key> <attributes> <hashlen> [noreply]\\r\\n" "\n"
+        "\t" "gop add <key> <field> <bytes> [create <attributes>] [noreply|pipe]\\r\\n<\"longitude latitude>\\r\\n" "\n"
+        "\t" "gop update <key> <field> <bytes> [noreply|pipe]\\r\\n<\"longitude latitude>\\r\\n" "\n"
+        "\t" "gop delete <key> <field> [drop] [noreply|pipe] \\r\\n" "\n"
+        "\t" "gop pos <key> <field> [delete|drop]\\r\\n" "\n"
+        "\t" "gop dist <key> <field> <field> <unit>\\r\\n" "\n"
+        "\t" "gop raditem <key> <field> <radius> <unit>\\r\\n" "\n"
+        "\t" "gop radlocation <key> <longitude> <latitude> <radius> <unit>\\r\\n" "\n"
+        "\t" "gop hash <key> <field>\r\n" "\n"
+        "\n"
+        "\t" "* <attributes> : <flags> <exptime> <maxcount> [<ovflaction>] [unreadable]" "\n"
+        )
+    }
+    #endif
+    else if (ntokens > 2 && strcmp(type, "attr") == 0) {
         out_string(c,
         "\t" "getattr <key> [<attribute name> ...]\\r\\n" "\n"
         "\t" "setattr <key> <name>=<value> [<name>=value> ...]\\r\\n" "\n"
@@ -9449,8 +9467,13 @@ static void process_lqdetect_command(conn *c, token_t *tokens, size_t ntokens)
 static inline int get_coll_create_attr_from_tokens(token_t *tokens, const int ntokens,
                                                    int coll_type, item_attr *attrp)
 {
+#ifdef GEO
+    assert(coll_type==ITEM_TYPE_LIST || coll_type==ITEM_TYPE_SET ||
+           coll_type==ITEM_TYPE_MAP || coll_type==ITEM_TYPE_BTREE) || coll_type==ITEM_TYPE_GEO)
+#else
     assert(coll_type==ITEM_TYPE_LIST || coll_type==ITEM_TYPE_SET ||
            coll_type==ITEM_TYPE_MAP || coll_type==ITEM_TYPE_BTREE);
+#endif
     int32_t exptime_int;
 
     /* create attributes: flags, exptime, maxcount, ovflaction, unreadable */

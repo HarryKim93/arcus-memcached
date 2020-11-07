@@ -947,6 +947,126 @@ default_btree_elem_get_by_posi(ENGINE_HANDLE* handle, const void* cookie,
     return ret;
 }
 
+#ifdef GEO
+/*
+static ENGINE_ERROR_CODE
+default_geo_struct_create(ENGINE_HANDLE* handle, const void* cookie,
+                          const void* key, const int nkey, item_attr *attrp,
+                          uint16_t vbucket)
+{
+    struct default_engine* engine = get_handle(handle);
+    ENGINE_ERROR_CODE ret;
+    VBUCKET_GUARD(engine, vbucket);
+
+    ACTION_BEFORE_WRITE(cookie, key, nkey);
+    ret = geo_struct_create(key, nkey, attrp, cookie);
+    ACTION_AFTER_WRITE(cookie, ret);
+    return ret;
+}
+
+static ENGINE_ERROR_CODE
+default_geo_elem_alloc(ENGINE_HANDLE* handle, const void* cookie,
+                       const void* key, const int nkey,
+                       const size_t nbytes, eitem** eitem)
+{
+    geo_elem_item *elem;
+    ENGINE_ERROR_CODE ret = ENGINE_EINVAL; // See ACTION_AFTER_WRITE()
+
+    ACTION_BEFORE_WRITE(cookie, key, nkey);
+    elem = geo_elem_alloc(nbytes, cookie);
+    ACTION_AFTER_WRITE(cookie, ret);
+    if (elem != NULL) {
+        *eitem = elem;
+        ret = ENGINE_SUCCESS;
+    } else {
+        ret = ENGINE_ENOMEM;
+    }
+    return ret;
+}
+
+static void
+default_geo_elem_free(ENGINE_HANDLE* handle, const void *cookie, eitem *eitem)
+{
+    geo_elem_free((geo_elem_item*)eitem);
+}
+
+static void
+default_geo_elem_release(ENGINE_HANDLE* handle, const void *cookie,
+                         eitem **eitem_array, const int eitem_count)
+{
+    geo_elem_release((geo_elem_item**)eitem_array, eitem_count);
+}
+
+static ENGINE_ERROR_CODE
+default_geo_elem_insert(ENGINE_HANDLE* handle, const void* cookie,
+                        const void* key, const int nkey, eitem *eitem,
+                        item_attr *attrp, bool *created, uint16_t vbucket)
+{
+    struct default_engine *engine = get_handle(handle);
+    ENGINE_ERROR_CODE ret;
+    VBUCKET_GUARD(engine, vbucket);
+
+    ACTION_BEFORE_WRITE(cookie, key, nkey);
+    ret = geo_elem_insert(key, nkey, (geo_elem_item*)eitem,
+                          attrp, created, cookie);
+    ACTION_AFTER_WRITE(cookie, ret);
+    return ret;
+}
+
+static ENGINE_ERROR_CODE
+default_geo_elem_delete(ENGINE_HANDLE* handle, const void* cookie,
+                        const void* key, const int nkey,
+                        const void* value, const int nbytes,
+                        const bool drop_if_empty, bool *dropped,
+                        uint16_t vbucket)
+{
+    struct default_engine *engine = get_handle(handle);
+    ENGINE_ERROR_CODE ret;
+    VBUCKET_GUARD(engine, vbucket);
+
+    ACTION_BEFORE_WRITE(cookie, key, nkey);
+    ret = geo_elem_delete(key, nkey, value, nbytes,
+                          drop_if_empty, dropped, cookie);
+    ACTION_AFTER_WRITE(cookie, ret);
+    return ret;
+}
+
+static ENGINE_ERROR_CODE
+default_geo_elem_exist(ENGINE_HANDLE* handle, const void* cookie,
+                       const void* key, const int nkey,
+                       const void* value, const int nbytes,
+                       bool *exist, uint16_t vbucket)
+{
+    struct default_engine *engine = get_handle(handle);
+    ENGINE_ERROR_CODE ret;
+    VBUCKET_GUARD(engine, vbucket);
+
+    ACTION_BEFORE_READ(cookie, key, nkey);
+    ret = geo_elem_exist(key, nkey, value, nbytes, exist);
+    return ret;
+}
+
+static ENGINE_ERROR_CODE
+default_geo_elem_get(ENGINE_HANDLE* handle, const void* cookie,
+                     const void* key, const int nkey,
+                     const uint32_t count,
+                     const bool delete, const bool drop_if_empty,
+                     struct elems_result *eresult, uint16_t vbucket)
+{
+    struct default_engine *engine = get_handle(handle);
+    ENGINE_ERROR_CODE ret;
+    VBUCKET_GUARD(engine, vbucket);
+
+    if (delete) ACTION_BEFORE_WRITE(cookie, key, nkey);
+    else        ACTION_BEFORE_READ(cookie, key, nkey);
+    ret = geo_elem_get(key, nkey, count, delete, drop_if_empty,
+                       eresult, cookie);
+    if (delete) ACTION_AFTER_WRITE(cookie, ret);
+    return ret;
+}
+*/
+#endif
+
 #ifdef SUPPORT_BOP_SMGET
 #ifdef JHPARK_OLD_SMGET_INTERFACE
 /* smget old interface */
@@ -1564,6 +1684,19 @@ create_instance(uint64_t interface, GET_SERVER_API get_server_api,
          .btree_posi_find    = default_btree_posi_find,
          .btree_posi_find_with_get = default_btree_posi_find_with_get,
          .btree_elem_get_by_posi = default_btree_elem_get_by_posi,
+#ifdef GEO
+         /* GEO Collection API */
+         /*
+         .geo_struct_create = default_geo_struct_create,
+         .geo_elem_alloc    = default_geo_elem_alloc,
+         .geo_elem_free     = default_geo_elem_free,
+         .geo_elem_release  = default_geo_elem_release,
+         .geo_elem_insert   = default_geo_elem_insert,
+         .geo_elem_delete   = default_geo_elem_delete,
+         .geo_elem_exist    = default_geo_elem_exist,
+         .geo_elem_get      = default_geo_elem_get,
+         */
+#endif
 #ifdef SUPPORT_BOP_SMGET
 #ifdef JHPARK_OLD_SMGET_INTERFACE
          .btree_elem_smget_old = default_btree_elem_smget_old,

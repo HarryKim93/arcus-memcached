@@ -7462,6 +7462,205 @@ ENGINE_ERROR_CODE btree_elem_smget(token_t *key_array, const int key_count,
 }
 #endif
 
+#ifdef GEO
+/*
+ * GEO Interface Functions
+ */
+
+// ENGINE_ERROR_CODE set_struct_create(const char *key, const uint32_t nkey,
+//                                     item_attr *attrp, const void *cookie)
+// {
+//     hash_item *it;
+//     ENGINE_ERROR_CODE ret;
+
+//     LOCK_CACHE();
+//     it = do_item_get(key, nkey, DONT_UPDATE);
+//     if (it != NULL) {
+//         do_item_release(it);
+//         ret = ENGINE_KEY_EEXISTS;
+//     } else {
+//         it = do_set_item_alloc(key, nkey, attrp, cookie);
+//         if (it == NULL) {
+//             ret = ENGINE_ENOMEM;
+//         } else {
+//             ret = do_item_link(it);
+//             do_item_release(it);
+//         }
+//     }
+//     UNLOCK_CACHE();
+//     return ret;
+// }
+
+// set_elem_item *set_elem_alloc(const uint32_t nbytes, const void *cookie)
+// {
+//     set_elem_item *elem;
+//     LOCK_CACHE();
+//     elem = do_set_elem_alloc(nbytes, cookie);
+//     UNLOCK_CACHE();
+//     return elem;
+// }
+
+// void set_elem_free(set_elem_item *elem)
+// {
+//     LOCK_CACHE();
+//     assert(elem->next == (set_elem_item *)ADDR_MEANS_UNLINKED);
+//     do_set_elem_free(elem);
+//     UNLOCK_CACHE();
+// }
+
+// void set_elem_release(set_elem_item **elem_array, const int elem_count)
+// {
+//     int cnt = 0;
+//     LOCK_CACHE();
+//     while (cnt < elem_count) {
+//         do_set_elem_release(elem_array[cnt++]);
+//         if ((cnt % 100) == 0 && cnt < elem_count) {
+//             UNLOCK_CACHE();
+//             LOCK_CACHE();
+//         }
+//     }
+//     UNLOCK_CACHE();
+// }
+
+// ENGINE_ERROR_CODE set_elem_insert(const char *key, const uint32_t nkey,
+//                                   set_elem_item *elem, item_attr *attrp,
+//                                   bool *created, const void *cookie)
+// {
+//     hash_item *it = NULL;
+//     ENGINE_ERROR_CODE ret;
+
+//     *created = false;
+
+//     LOCK_CACHE();
+//     ret = do_set_item_find(key, nkey, DONT_UPDATE, &it);
+//     if (ret == ENGINE_KEY_ENOENT && attrp != NULL) {
+//         it = do_set_item_alloc(key, nkey, attrp, cookie);
+//         if (it == NULL) {
+//             ret = ENGINE_ENOMEM;
+//         } else {
+//             ret = do_item_link(it);
+//             if (ret == ENGINE_SUCCESS) {
+//                 *created = true;
+//             } else {
+//                 /* The item is to be released, below */
+//             }
+//         }
+//     }
+//     if (ret == ENGINE_SUCCESS) {
+//         ret = do_set_elem_insert(it, elem, cookie);
+//         if (ret != ENGINE_SUCCESS && *created) {
+//             do_item_unlink(it, ITEM_UNLINK_NORMAL);
+//         }
+//     }
+//     if (it != NULL) do_item_release(it);
+//     UNLOCK_CACHE();
+//     return ret;
+// }
+
+// ENGINE_ERROR_CODE set_elem_delete(const char *key, const uint32_t nkey,
+//                                   const char *value, const uint32_t nbytes,
+//                                   const bool drop_if_empty, bool *dropped,
+//                                   const void *cookie)
+// {
+//     hash_item *it;
+//     ENGINE_ERROR_CODE ret;
+
+//     *dropped = false;
+
+//     LOCK_CACHE();
+//     ret = do_set_item_find(key, nkey, DONT_UPDATE, &it);
+//     if (ret == ENGINE_SUCCESS) { /* it != NULL */
+//         set_meta_info *info = (set_meta_info *)item_get_meta(it);
+//         ret = do_set_elem_delete_with_value(info, value, nbytes, ELEM_DELETE_NORMAL);
+//         if (ret == ENGINE_SUCCESS) {
+//             if (info->ccnt == 0 && drop_if_empty) {
+//                 do_item_unlink(it, ITEM_UNLINK_NORMAL);
+//                 *dropped = true;
+//             }
+//         }
+//         do_item_release(it);
+//     }
+//     UNLOCK_CACHE();
+//     return ret;
+// }
+
+// ENGINE_ERROR_CODE set_elem_exist(const char *key, const uint32_t nkey,
+//                                  const char *value, const uint32_t nbytes,
+//                                  bool *exist)
+// {
+//     hash_item *it;
+//     ENGINE_ERROR_CODE ret;
+
+//     LOCK_CACHE();
+//     ret = do_set_item_find(key, nkey, DO_UPDATE, &it);
+//     if (ret == ENGINE_SUCCESS) {
+//         set_meta_info *info = (set_meta_info *)item_get_meta(it);
+//         do {
+//             if ((info->mflags & COLL_META_FLAG_READABLE) == 0) {
+//                 ret = ENGINE_UNREADABLE; break;
+//             }
+//             if (do_set_elem_find(info, value, nbytes) != NULL)
+//                 *exist = true;
+//             else
+//                 *exist = false;
+//         } while (0);
+//         do_item_release(it);
+//     }
+//     UNLOCK_CACHE();
+//     return ret;
+// }
+
+// ENGINE_ERROR_CODE set_elem_get(const char *key, const uint32_t nkey,
+//                                const uint32_t count,
+//                                const bool delete, const bool drop_if_empty,
+//                                struct elems_result *eresult,
+//                                const void *cookie)
+// {
+//     hash_item *it;
+//     ENGINE_ERROR_CODE ret;
+
+//     eresult->elem_array = NULL;
+//     eresult->elem_count = 0;
+
+//     LOCK_CACHE();
+//     ret = do_set_item_find(key, nkey, DO_UPDATE, &it);
+//     if (ret == ENGINE_SUCCESS) {
+//         set_meta_info *info = (set_meta_info *)item_get_meta(it);
+//         do {
+//             if ((info->mflags & COLL_META_FLAG_READABLE) == 0) {
+//                 ret = ENGINE_UNREADABLE; break;
+//             }
+//             if (info->ccnt <= 0) {
+//                 ret = ENGINE_ELEM_ENOENT; break;
+//             }
+//             if (count == 0 || info->ccnt < count) {
+//                 eresult->elem_array = (eitem **)malloc(info->ccnt * sizeof(eitem*));
+//             } else {
+//                 eresult->elem_array = (eitem **)malloc(count * sizeof(eitem*));
+//             }
+//             if (eresult->elem_array == NULL) {
+//                 ret = ENGINE_ENOMEM; break;
+//             }
+//             eresult->elem_count = do_set_elem_get(info, count, delete,
+//                                                   (set_elem_item**)(eresult->elem_array));
+//             assert(eresult->elem_count > 0);
+//             if (info->ccnt == 0 && drop_if_empty) {
+//                 assert(delete == true);
+//                 do_item_unlink(it, ITEM_UNLINK_NORMAL);
+//                 eresult->dropped = true;
+//             } else {
+//                 eresult->dropped = false;
+//             }
+//             eresult->flags = it->flags;
+//         } while (0);
+//         do_item_release(it);
+//     }
+//     UNLOCK_CACHE();
+//     return ret;
+// }
+
+#endif
+
 /*
  * ITEM ATTRIBUTE Interface Functions
  */

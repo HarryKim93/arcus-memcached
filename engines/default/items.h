@@ -257,56 +257,6 @@ typedef struct _btree_scan_info {
     int32_t          next; /* for free scan link */
 } btree_scan_info;
 
-<<<<<<< HEAD
-#ifdef GEO
-#define GEO_HASHTAB_SIZE 32
-#define GEO_HASHIDX_MASK 0x0000000F
-#define GEO_MAX_HASHCHAIN_SIZE 64
-
-/* geo meta info */
-typedef struct _geo_meta_info {
-    int32_t  mcnt;      /* maximum count */
-    int32_t  ccnt;      /* current count */
-    uint8_t  ovflact;   /* overflow action */
-    uint8_t  mflags;    /* sticky, readable flags */
-    uint16_t itdist;    /* distance from hash item (unit: sizeof(size_t)) */
-    uint32_t stotal;    /* total space */
-    geo_hash_node *root;
-} geo_meta_info;
-
-typedef struct _geo_hash_node {
-    uint16_t refcount;
-    uint8_t  slabs_clsid;         /* which slab class we're in */
-    uint8_t  hdepth;
-    uint16_t tot_elem_cnt;
-    uint16_t tot_hash_cnt;
-    int16_t  hcnt[GEO_HASHTAB_SIZE];
-    void    *htab[GEO_HASHTAB_SIZE];
-} geo_hash_node;
-#endif
-
-/* common meta info of list and set */
-typedef struct _coll_meta_info {
-    int32_t  mcnt;      /* maximum count */
-    int32_t  ccnt;      /* current count */
-    uint8_t  ovflact;   /* overflow action */
-    uint8_t  mflags;    /* sticky, readable flags */
-    uint16_t itdist;    /* distance from hash item (unit: sizeof(size_t)) */
-    uint32_t stotal;    /* total space */
-} coll_meta_info;
-
-/* item stats */
-typedef struct {
-    unsigned int evicted;
-    unsigned int evicted_nonzero;
-    rel_time_t   evicted_time;
-    unsigned int outofmemory;
-    unsigned int tailrepairs;
-    unsigned int reclaimed;
-} itemstats_t;
-
-=======
->>>>>>> dd2a3b1... Add geo hash node
 #ifdef GEO
 #define GEO_MAX_DEPTH  7
 #define GEO_ITEM_COUNT 32 /* Recommend GEO_ITEM_COUNT >= 8 */

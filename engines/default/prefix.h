@@ -50,6 +50,8 @@ typedef struct _prefix_t {
     uint64_t items_count[ITEM_TYPE_MAX];
     uint64_t items_bytes[ITEM_TYPE_MAX];
 #endif
+
+    struct _prefix_t *header;
 } prefix_t;
 
 #define PREFIX_IS_RSVD(pfx,npfx) ((npfx) == 5 && strncmp((pfx), "arcus", 5) == 0)
